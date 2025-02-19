@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en" class="sl-theme-dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shoelace Progress Integration</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@shoelace-style/shoelace@2.12.0/cdn/themes/light.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@shoelace-style/shoelace@2.12.0/cdn/themes/dark.css" />
+    <script type="module" src="https://cdn.jsdelivr.net/npm/@shoelace-style/shoelace@2.12.0/cdn/shoelace-autoloader.js"></script>
+    <style>
+        .progress-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            z-index: 2000;
+        }
+        sl-progress-bar {
+            width: 100%;
+        }
+    </style>
+</head>
+<body>
+    <div id="app">
+        <div class="progress-container">
+            <sl-progress-bar id="progress-bar" value="0" hidden></sl-progress-bar>
+        </div>
+
+        <div class="content-area">
+            <h1>Content Loading Example</h1>
+            <button id="load-content">Load Content</button>
+            <div id="dynamic-content"></div>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('load-content').addEventListener('click', async () => {
+            const progressBar = document.getElementById('progress-bar');
+            const contentArea = document.getElementById('dynamic-content');
+
+            progressBar.hidden = false;
+            progressBar.value = 0;
+
+            try {
+                console.log("Fetching HTML content...");
+
+                const response = await fetch('https://twitcdfgdfgdfgh.tv'); // Change this to your actual HTML file
+                if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
+
+                const reader = response.body.getReader();
+                const decoder = new TextDecoder("utf-8");
+                let receivedLength = 0;
+                let chunks = [];
+
+                while (true) {
+                    const { done, value } = await reader.read();
+                    if (done) break;
+                    chunks.push(value);
+                    receivedLength += value.length;
+                    progressBar.value = Math.min((receivedLength / 50000) * 100, 100); // Adjust based on expected size
+                }
+
+                const fullText = chunks.map(chunk => decoder.decode(chunk, { stream: true })).join("");
+                contentArea.innerHTML = fullText;
+            } catch (error) {
+                console.error("Fetch error:", error);
+                contentArea.innerHTML = `<p>Error loading content. Check console.</p>`;
+            } finally {
+                progressBar.hidden = true;
+            }
+        });
+
+    </script>
+</body>
+</html>
