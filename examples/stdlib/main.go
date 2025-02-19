@@ -22,10 +22,10 @@ func renderContent(route, title, content string) http.HandlerFunc {
             CurrentRoute: route,
             LogoText:     "MyApp",
             NavItems: []shoelacetheme.NavItem{
-                {Route: "/content/home", Icon: "house"},
+                {Route: "/", Icon: "house"},
                 {Route: "/content/games", Icon: "hdd-stack"},
                 {Route: "/content/profile", Icon: "person"},
-                {Route: "/content/chat", Icon: "chat"},
+                {Route: "/content/caaaahat", Icon: "chat"},
             },
             InitialContent: template.HTML(content),
             HeadingFont:    shoelacetheme.Font{Family: "Inter", Weight: 900, Size: "1rem"},
@@ -46,7 +46,6 @@ func main() {
         renderContent("/content/home", "My Dynamic App - Home", "<h1>Welcome</h1><p>This is the home page.</p>")(w, r)
     })
 
-    http.HandleFunc("/content/home", renderContent("/content/home", "My Dynamic App - Home", "<h1>Home Page</h1><p>This is the home content.</p>"))
     http.HandleFunc("/content/games", renderContent("/content/games", "My Dynamic App - Games", "<h1>Games Page</h1><p>Games content here.</p>"))
     http.HandleFunc("/content/profile", renderContent("/content/profile", "My Dynamic App - Profile", "<h1>Profile Page</h1><p>Profile content here.</p>"))
     http.HandleFunc("/content/chat", renderContent("/content/chat", "My Dynamic App - Chat", "<h1>Chat Page</h1><p>Chat content here.</p>"))
