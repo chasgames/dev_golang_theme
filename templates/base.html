@@ -342,7 +342,7 @@
             </div>
             <div class="nav-icons">
                 {{ range .NavItems }}
-                <sl-button class="nav-button nav-link" size="large" data-route="{{ .Route }}" {{ if eq .Route $.CurrentRoute }}active{{ end }}>
+                <sl-button class="nav-button nav-link" size="large" data-route="{{ .Route }}">
                     <sl-icon name="{{ .Icon }}"></sl-icon>
                 </sl-button>
                 {{ end }}
