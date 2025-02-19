@@ -381,14 +381,14 @@
             const dropdown = document.getElementById('settings-dropdown');
             const button = document.getElementById('settings-button');
             const navButtons = document.querySelectorAll('.nav-icons .nav-button');
-
+    
             // Get saved theme preference or default to dark
             const savedTheme = localStorage.getItem('theme') || 'dark';
             const isDarkMode = savedTheme === 'dark';
             document.documentElement.classList.toggle('sl-theme-dark', isDarkMode);
             themeToggle.checked = isDarkMode;
             themeIcon.name = isDarkMode ? 'moon-stars' : 'sun';
-
+    
             // Theme toggle handler
             themeToggle.addEventListener('sl-change', () => {
                 const isDark = themeToggle.checked;
@@ -396,21 +396,21 @@
                 themeIcon.name = isDark ? 'moon-stars' : 'sun';
                 localStorage.setItem('theme', isDark ? 'dark' : 'light');
             });
-
+    
             // Function to handle dropdown state change
             const handleDropdownState = (isOpen) => {
                 button.classList.toggle('open', isOpen);
             };
-
+    
             // Update dropdown show/hide event listeners
             dropdown.addEventListener('sl-show', () => handleDropdownState(true));
             dropdown.addEventListener('sl-hide', () => handleDropdownState(false));
-
+    
             // Open on hover
             button.addEventListener('mouseenter', () => {
                 dropdown.show();
             });
-
+    
             // Close when mouse leaves the dropdown
             dropdown.addEventListener('mouseleave', () => {
                 setTimeout(() => {
@@ -419,7 +419,7 @@
                     }
                 }, 100);
             });
-
+    
             // Toggle on click as well
             button.addEventListener('click', (e) => {
                 e.stopPropagation();
@@ -429,27 +429,24 @@
                     dropdown.show();
                 }
             });
-
+    
             // Navigation with active state
             navButtons.forEach(button => {
                 button.addEventListener('click', () => {
                     const route = button.getAttribute('data-route');
                     navigateTo(route);
-                    // Set active state
-                    navButtons.forEach(b => b.removeAttribute('active'));
-                    button.setAttribute('active', '');
                 });
             });
-
+    
             // Centralized navigation handler
             async function navigateTo(route) {
                 const contentArea = document.querySelector('.content-area');
-                history.pushState(null, '', route);
                 try {
                     const response = await fetch(route);
                     if (response.ok) {
                         const content = await response.text();
                         contentArea.innerHTML = content;
+                        history.pushState(null, '', route);
                         // Update active state
                         navButtons.forEach(button => {
                             if (button.getAttribute('data-route') === route) {
@@ -459,18 +456,18 @@
                             }
                         });
                     } else {
-                        showToast(`Error ${response.status}: ${response.statusText}`, 'danger');
+                        showToast(`Error ${response.status}: ${response.statusText}`, 'danger', 3000);
                     }
                 } catch (error) {
-                    showToast('Network Error: Unable to load content.', 'danger');
+                    showToast('Network Error: Unable to load content.', 'danger', 3000);
                 }
             }
-
+    
             // Handle browser navigation (back/forward buttons)
             window.addEventListener('popstate', () => {
                 navigateTo(window.location.pathname);
             });
-
+    
             // Toast function
             function showToast(message, variant = 'primary', duration = 3000) {
                 const alert = document.createElement('sl-alert');
@@ -492,20 +489,20 @@
                 }, duration);
             }
         });
-
+    
         // Menu toggle behavior
         document.addEventListener('DOMContentLoaded', () => {
             const menuItems = document.querySelectorAll('sl-menu-item');
             const themeToggle = document.getElementById('theme-toggle');
             const themeIcon = document.getElementById('theme-icon');
-
+    
             // Set initial theme state (redundant here, handled in window.load)
             const savedTheme = localStorage.getItem('theme') || 'dark';
             const isDarkMode = savedTheme === 'dark';
             document.documentElement.classList.toggle('sl-theme-dark', isDarkMode);
             themeToggle.checked = isDarkMode;
             themeIcon.name = isDarkMode ? 'moon-stars' : 'sun';
-
+    
             // Handle theme toggle (redundant, kept for consistency)
             themeToggle.addEventListener('sl-change', () => {
                 const isDark = themeToggle.checked;
@@ -513,7 +510,7 @@
                 themeIcon.name = isDark ? 'moon-stars' : 'sun';
                 localStorage.setItem('theme', isDark ? 'dark' : 'light');
             });
-
+    
             // Loop through each menu item and add a click event
             menuItems.forEach(item => {
                 item.addEventListener('click', (e) => {
@@ -530,12 +527,12 @@
                 });
             });
         });
-
+    
         // Nav bar top-bottom behavior
         document.addEventListener('DOMContentLoaded', () => {
             const themeNavSwitch = document.getElementById('theme-navswitch');
             const navContainer = document.querySelector('.nav-container');
-
+    
             const isNavbarAtTop = localStorage.getItem('navbar-position') === 'top';
             if (isNavbarAtTop) {
                 navContainer.classList.add('navbar-top');
@@ -544,7 +541,7 @@
                 navContainer.classList.remove('navbar-top');
                 themeNavSwitch.checked = false;
             }
-
+    
             themeNavSwitch.addEventListener('sl-change', () => {
                 if (themeNavSwitch.checked) {
                     navContainer.classList.add('navbar-top');
@@ -555,13 +552,13 @@
                 }
             });
         });
-
+    
         // Alert containers top and bottom
         document.addEventListener('DOMContentLoaded', () => {
             const alertContainer = document.getElementById('alert-container');
             const navContainer = document.querySelector('.nav-container');
             const navSwitch = document.getElementById('theme-navswitch');
-
+    
             function updateAlertPosition() {
                 if (navContainer.classList.contains('navbar-top')) {
                     alertContainer.style.top = 'auto';
@@ -571,7 +568,7 @@
                     alertContainer.style.bottom = 'auto';
                 }
             }
-
+    
             updateAlertPosition();
             if (navSwitch) {
                 navSwitch.addEventListener('sl-change', () => {
