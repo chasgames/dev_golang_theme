@@ -4,7 +4,8 @@ import (
 	"fmt"
 	"html/template"
 	"net/http"
-	shoelacetheme "github.com/chasgames/dev_golang_theme"
+	// shoelacetheme "github.com/chasgames/dev_golang_theme"
+	shoelacetheme "../../theme"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 )
