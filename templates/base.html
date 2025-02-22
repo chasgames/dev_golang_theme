@@ -385,15 +385,15 @@
             const themeIcon = document.getElementById('theme-icon');
             const dropdown = document.getElementById('settings-dropdown');
             const button = document.getElementById('settings-button');
-            let navButtons = document.querySelectorAll('.nav-icons .nav-button'); // Initial selection
-    
+            let navButtons = document.querySelectorAll('.nav-icons .nav-button');
+
             // Theme initialization
             const savedTheme = localStorage.getItem('theme') || 'dark';
             const isDarkMode = savedTheme === 'dark';
             document.documentElement.classList.toggle('sl-theme-dark', isDarkMode);
             themeToggle.checked = isDarkMode;
             themeIcon.name = isDarkMode ? 'moon-stars' : 'sun';
-    
+
             // Theme toggle handler
             themeToggle.addEventListener('sl-change', () => {
                 const isDark = themeToggle.checked;
@@ -401,7 +401,7 @@
                 themeIcon.name = isDark ? 'moon-stars' : 'sun';
                 localStorage.setItem('theme', isDark ? 'dark' : 'light');
             });
-    
+
             // Dropdown behavior
             const handleDropdownState = (isOpen) => button.classList.toggle('open', isOpen);
             dropdown.addEventListener('sl-show', () => handleDropdownState(true));
@@ -414,17 +414,38 @@
                 e.stopPropagation();
                 dropdown.open ? dropdown.hide() : dropdown.show();
             });
-    
-            // Centralized navigation handler
+
+            // Centralized navigation handler with script execution
             async function navigateTo(route) {
                 const contentArea = document.querySelector('.content-area');
                 try {
                     const response = await fetch(route, {
-                        headers: { 'X-Requested-With': 'XMLHttpRequest' } // Indicate AJAX request
+                        headers: { 'X-Requested-With': 'XMLHttpRequest' }
                     });
                     if (response.ok) {
                         const content = await response.text();
-                        contentArea.innerHTML = content;
+
+                        // Clear existing content
+                        while (contentArea.firstChild) {
+                            contentArea.removeChild(contentArea.firstChild);
+                        }
+
+                        // Parse and append new content
+                        const parser = new DOMParser();
+                        const doc = parser.parseFromString(content, 'text/html');
+                        const fragment = document.createDocumentFragment();
+                        Array.from(doc.body.childNodes).forEach(node => fragment.appendChild(node));
+                        contentArea.appendChild(fragment);
+
+                        // Execute any script tags
+                        const scripts = contentArea.getElementsByTagName('script');
+                        Array.from(scripts).forEach(oldScript => {
+                            const newScript = document.createElement('script');
+                            Array.from(oldScript.attributes).forEach(attr => newScript.setAttribute(attr.name, attr.value));
+                            newScript.textContent = oldScript.textContent;
+                            oldScript.parentNode.replaceChild(newScript, oldScript);
+                        });
+
                         history.pushState(null, '', route);
                         navButtons.forEach(button => {
                             button.removeAttribute('active');
@@ -439,23 +460,22 @@
                     showToast('Network Error: Unable to load content.', 'danger', 3000);
                 }
             }
-    
+
             // Attach navigation event listeners
             function attachNavListeners() {
                 navButtons.forEach(button => {
-                    // Remove existing listeners to avoid duplicates
                     button.removeEventListener('click', button._clickHandler);
                     button._clickHandler = () => navigateTo(button.getAttribute('data-route'));
                     button.addEventListener('click', button._clickHandler);
                 });
             }
             attachNavListeners();
-    
+
             // Handle browser navigation (back/forward)
             window.addEventListener('popstate', () => {
                 navigateTo(window.location.pathname);
             });
-    
+
             // Toast function
             function showToast(message, variant = 'primary', duration = 3000) {
                 const alert = document.createElement('sl-alert');
@@ -471,26 +491,26 @@
                 }, duration);
             }
         });
-    
+
         // Menu toggle behavior
         document.addEventListener('DOMContentLoaded', () => {
             const menuItems = document.querySelectorAll('sl-menu-item');
             const themeToggle = document.getElementById('theme-toggle');
             const themeIcon = document.getElementById('theme-icon');
-    
+
             const savedTheme = localStorage.getItem('theme') || 'dark';
             const isDarkMode = savedTheme === 'dark';
             document.documentElement.classList.toggle('sl-theme-dark', isDarkMode);
             themeToggle.checked = isDarkMode;
             themeIcon.name = isDarkMode ? 'moon-stars' : 'sun';
-    
+
             themeToggle.addEventListener('sl-change', () => {
                 const isDark = themeToggle.checked;
                 document.documentElement.classList.toggle('sl-theme-dark', isDark);
                 themeIcon.name = isDark ? 'moon-stars' : 'sun';
                 localStorage.setItem('theme', isDark ? 'dark' : 'light');
             });
-    
+
             menuItems.forEach(item => {
                 item.addEventListener('click', (e) => {
                     const switchElement = item.querySelector('sl-switch');
@@ -506,12 +526,12 @@
                 });
             });
         });
-    
+
         // Navbar top-bottom behavior
         document.addEventListener('DOMContentLoaded', () => {
             const themeNavSwitch = document.getElementById('theme-navswitch');
             const navContainer = document.querySelector('.nav-container');
-    
+
             const isNavbarAtTop = localStorage.getItem('navbar-position') === 'top';
             if (isNavbarAtTop) {
                 navContainer.classList.add('navbar-top');
@@ -520,7 +540,7 @@
                 navContainer.classList.remove('navbar-top');
                 themeNavSwitch.checked = false;
             }
-    
+
             themeNavSwitch.addEventListener('sl-change', () => {
                 if (themeNavSwitch.checked) {
                     navContainer.classList.add('navbar-top');
@@ -531,13 +551,13 @@
                 }
             });
         });
-    
+
         // Alert containers top and bottom
         document.addEventListener('DOMContentLoaded', () => {
             const alertContainer = document.getElementById('alert-container');
             const navContainer = document.querySelector('.nav-container');
             const navSwitch = document.getElementById('theme-navswitch');
-    
+
             function updateAlertPosition() {
                 if (navContainer.classList.contains('navbar-top')) {
                     alertContainer.style.top = 'auto';
@@ -547,7 +567,7 @@
                     alertContainer.style.bottom = 'auto';
                 }
             }
-    
+
             updateAlertPosition();
             if (navSwitch) {
                 navSwitch.addEventListener('sl-change', () => {
